@@ -1,0 +1,11 @@
+[project]
+name = "src"
+version = "0.0.1"
+description = "A data science project analyzing smartphone trends and features across market segments."
+authors = [{name = "Pramit De", email = "pramitde726@gmail.com"}]
+
+[tool.setuptools]
+packages = {find = {}}
+
+[tool.setuptools.dynamic]
+dependencies = {file = "requirements.txt"}
