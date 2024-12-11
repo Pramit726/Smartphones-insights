@@ -29,6 +29,7 @@ def get_data(name: str, data_type_dir: str) -> pd.DataFrame:
         return pd.read_csv(file_path)
     except FileNotFoundError as e:
         raise FileNotFoundError(f"File not found: {file_path}") from e
+    
 
 def outlier_overview(dataframe: pd.DataFrame, column_name: str, cat_col: Optional[str] = None) -> pd.DataFrame:
     """
@@ -292,9 +293,9 @@ def test_for_normality(dataframe: pd.DataFrame, column_name: str, alpha: float =
         print(f"Fail to reject the null hypothesis. The data is normally distributed.")
 
 
-def two_sample_ttest(dataframe: pd.DataFrame, num_col: str, cat_col: str, alpha: float = 0.05) -> None:
+def two_sample_independent_ttest(dataframe: pd.DataFrame, num_col: str, cat_col: str, alpha: float = 0.05) -> None:
     """
-    Perform a two-sample t-test for a numerical variable across two categories of a categorical variable.
+    Perform a two-sample independent t-test for a numerical variable across two categories of a categorical variable.
 
     Args:
         dataframe (pd.DataFrame): Input DataFrame.
@@ -374,3 +375,32 @@ def mann_whitney_test(
         print(f"Reject the null hypothesis: There is a significant difference in {num_col} between {group_1} and {group_2}.")
     else:
         print(f"Fail to reject the null hypothesis: No significant difference in {num_col} between {group_1} and {group_2}.")
+
+
+def levene_test(dataframe: pd.DataFrame, num_col: str, cat_col: str) -> None:
+    """
+    Perform Levene's Test to check for homogeneity of variances across different groups in a categorical column.
+
+    Args:
+        dataframe (pd.DataFrame): Input DataFrame.
+        num_col (str): Numerical column to test for variance equality.
+        cat_col (str): Categorical column representing the groups to compare.
+
+    Returns:
+        None
+    """
+    # Drop NaN values
+    data = dataframe.loc[:, [num_col, cat_col]].dropna()
+
+    # Group the data by the categorical column and create a list of values for each group
+    groups = [group[num_col].values for _, group in data.groupby(cat_col)]
+    
+    # Perform Levene's Test
+    stat, p_val = levene(*groups)
+    
+    print(f"Levene's Test p-value: {p_val}")
+    
+    if p_val <= 0.05:
+        print(f"Reject the null hypothesis. The variances across the groups are significantly different.")
+    else:
+        print(f"Fail to reject the null hypothesis. The variances across the groups are not significantly different.")
