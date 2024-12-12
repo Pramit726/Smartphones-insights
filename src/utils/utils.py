@@ -172,7 +172,7 @@ def categorical_analysis(dataframe: pd.DataFrame, column_name: str) -> None:
     Returns:
         None
     """
-    display(
+    display( # type: ignore
         pd.DataFrame({
             "Count": dataframe[column_name].value_counts(),
             "Percentage": dataframe[column_name].value_counts(normalize=True)
